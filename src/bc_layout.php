@@ -53,21 +53,27 @@ function block_detail($block_id, $hash=FALSE)
 */	
 function tx_detail ($tx_id)
 {
-	$raw_tx = getrawtransaction ($tx_id);
+	$raw_tx = gettransaction ($tx_id);
 
 	section_head ("Transaction: ".$raw_tx["txid"]);
 	
 	section_subhead ("Detailed Description");
-
-	detail_display ("TX Version", $raw_tx["version"]);
 	
 	detail_display ("TX Time", date ("F j, Y, H:i:s", $raw_tx["time"]));
 	
-	detail_display ("Lock Time", $raw_tx["locktime"]);
+	detail_display ("Amount", $raw_tx["amount"]);
 	
+	detail_display("Fee", $raw_tx["fee"]);
+
 	detail_display ("Confirmations", $raw_tx["confirmations"]);
+		
+	if($raw_tx["confirmations"])
+	{
+		detail_display ("Block Hash", blockhash_link ($raw_tx["blockhash"]));
+		detail_display ("Block Index",$raw_tx["blockindex"]);
+	}
 	
-	detail_display ("Block Hash", blockhash_link ($raw_tx["blockhash"]));
+	
 	
 //	Florin Coin Feature
 	if (isset ($raw_tx["tx-comment"]) && $raw_tx["tx-comment"] != "")
@@ -75,67 +81,13 @@ function tx_detail ($tx_id)
 		detail_display ("TX Message", htmlspecialchars ($raw_tx["tx-comment"]));
 	}
 	
-	detail_display ("HEX Data", $raw_tx["hex"], 50);
-	
-	section_head ("Transaction Inputs");		
-	
-	foreach ($raw_tx["vin"] as $key => $txin)
-	{
-		section_subhead ("Input Transaction ".$key);
-
-		if (isset ($txin["coinbase"]))
-		{
-			detail_display ("Coinbase", $txin["coinbase"]);
-	
-			detail_display ("Sequence", $txin["sequence"]);
-		}
-		
-		else
-		{
-			detail_display ("TX ID", tx_link ($txin["txid"]));
-	
-			detail_display ("TX Output", $txin["vout"]);
-	
-			detail_display ("TX Sequence", $txin["sequence"]);
-	
-			detail_display ("Script Sig (ASM)", $txin["scriptSig"]["asm"], 50);
-	
-			detail_display ("Script Sig (HEX)", $txin["scriptSig"]["hex"], 50);
-		}
-	}
-	
-	section_head ("Transaction Outputs");
-	
-	foreach ($raw_tx["vout"] as $key => $txout)
-	{
-		section_subhead ("Output Transaction ".$key);
-	
-		detail_display ("TX Value", $txout["value"]);
-	
-		detail_display ("TX Type", $txout["scriptPubKey"]["type"]);
-	
-		detail_display ("Required Sigs", $txout["scriptPubKey"]["reqSigs"]);
-	
-		detail_display ("Script Pub Key (ASM)", $txout["scriptPubKey"]["asm"], 50);
-	
-		detail_display ("Script Pub Key (HEX)", $txout["scriptPubKey"]["hex"], 50);
-	
-		if (isset ($txout["scriptPubKey"]["addresses"]))
-		{
-			foreach ($txout["scriptPubKey"]["addresses"] as $key => $address);
-			{
-				detail_display ("Address ".$key, $address);
-			}
-		}
-		
-		}
-	
 	section_head ("Raw Transaction Detail");
 	
 	echo "	<textarea name=\"rawtrans\" rows=\"25\" cols=\"80\" style=\"text-align:left;\">\n";
 	print_r ($raw_tx);
 	echo "	\n</textarea><br><br>\n";
 }
+
 
 
 /**

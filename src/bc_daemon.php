@@ -7,7 +7,6 @@
 	$GLOBALS["wallet_port"] = "9902";
 	$GLOBALS["wallet_user"] = "USERNAME";
 	$GLOBALS["wallet_pass"] = "PASSWORD";
-
 	$coin_name = "Peercoin";
 
 /******************************************************************************
@@ -138,25 +137,17 @@
 	/**
 	* Get raw transaction data for the provided TxID value
 	*
-	* If verbose=0	: Returns serialized, hex-encoded data
-	*				  for transaction txid
-	* If verbose!=0	: Returns JSON object of transaction info
-	*
-	* See: https://en.bitcoin.it/wiki/Raw_Transactions#getrawtransaction_.3Ctxid.3E_.5Bverbose.3D0.5D
-	*
 	* @param	string	$tx_id		Transaction ID
-	* @param	int		$verbose	[Optional] Values: 0 | 1
 	*
-	* @return	mixed
+	* @return	JSON object of transaction info
 	*/
-	function getrawtransaction ($tx_id, $verbose=1)
+	function gettransaction ($tx_id)
 	{
 	//	The JSON-RPC request starts with a method name
-		$request_array["method"] = "getrawtransaction";
+		$request_array["method"] = "gettransaction";
 	
-	//	For getrawtransaction a txid is required	
+	//	For gettransaction a txid is required	
 		$request_array["params"][0] = $tx_id;
-		$request_array["params"][1] = $verbose;
 	
 	//	Send the request to the wallet
 		$info = wallet_fetch ($request_array);
